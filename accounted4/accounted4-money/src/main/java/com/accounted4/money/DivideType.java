@@ -35,8 +35,8 @@ package com.accounted4.money;
  * and the final amount is adjusted down to compensate for the additional
  * fractional pennies. An example usage of this case would be for building an
  * amortization schedule: we would not wish to tell the mortgagor to make
- * the first two payments in one amount (8.33) and the remaining in another
- * amount (8.34) as in case B. Rather, we would request all payments to be
+ * the first two payments in one amount (8.34) and the remaining in another
+ * amount (8.33) as in case B. Rather, we would request all payments to be
  * of one amount (8.34) with an adjustment made for the final amount (8.30).
  * The rounding should always be up since it would not be desirable for the
  * mortgagor to be behind in payments at any one time.
