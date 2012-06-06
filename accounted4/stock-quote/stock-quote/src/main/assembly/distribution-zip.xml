@@ -1,0 +1,52 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+ 
+    <id>dist</id>
+ 
+    <formats>
+        <format>zip</format>
+    </formats>
+ 
+    <dependencySets>
+        <!-- External libraries go into the lib folder.
+             POM needs to include lib folder entries
+        -->
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <scope>runtime</scope>
+        </dependencySet>
+    </dependencySets>
+ 
+    <fileSets>
+ 
+        <!-- Generated application jar file goes in the bin folder -->
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>/bin</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+ 
+        <!-- Add startup files to the bin folder -->
+        <fileSet>
+            <filtered>true</filtered>
+            <directory>src/main/assembly</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>stockquote.*</include>
+            </includes>
+        </fileSet>
+ 
+        <!-- Resources go into the conf folder. The conf folder needs to be added to the classpath -->
+        <fileSet>
+            <filtered>true</filtered>
+            <directory>src/main/resources</directory>
+            <outputDirectory>conf</outputDirectory>
+        </fileSet>
+ 
+    </fileSets>
+ 
+</assembly>
