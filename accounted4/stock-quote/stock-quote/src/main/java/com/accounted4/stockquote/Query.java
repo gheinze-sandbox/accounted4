@@ -136,9 +136,12 @@ public class Query {
             if (!quoteService.getServiceName().equalsIgnoreCase(selectedService)) {
                 continue;
             }
-            
             // Build the list of symbols based on entered csv
-            List<String> enteredSymbols = Arrays.asList(selectedSymbols.split(","));
+            String[] split = selectedSymbols.split(",");
+            for (int i = 0; i < split.length; i++) {
+                split[i] = split[i].trim();
+            }
+            List<String> enteredSymbols = Arrays.asList(split);
             
             // Build the list of attributes based on entered csv
             ArrayList<QuoteAttribute> attrList = new ArrayList<>();

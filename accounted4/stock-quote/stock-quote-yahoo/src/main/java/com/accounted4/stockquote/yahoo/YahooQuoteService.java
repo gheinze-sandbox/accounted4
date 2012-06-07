@@ -24,9 +24,8 @@ public class YahooQuoteService implements QuoteService {
 
     private static String SERVICE_NAME = "Yahoo";
     
-    //TODO: properties file, url info has changed in the past...
+    //TODO: get url from a properties file: url info has changed in the past, shouldn't require a recompile
     private static final String BASE_URL = "http://finance.yahoo.com/d/quotes.csv";
-    private static final String SECURITY_SEPARATOR = "+";
 
 
     @Override
@@ -38,14 +37,16 @@ public class YahooQuoteService implements QuoteService {
     @Override
     public List<HashMap<QuoteAttribute, String>> executeQuery(List<String> securityList, List<QuoteAttribute> quoteAttributes) {
         
-        String symbolList = securityListToString(securityList);
+        String tickerList = securityListToString(securityList);
         String attributeList = attributeListToString(quoteAttributes);
         HttpClient httpclient = new DefaultHttpClient();
-        HttpGet httpget = new HttpGet(BASE_URL + "?" + "s=" + symbolList + "&" + "f=" + attributeList);
+        String urlString = BASE_URL + "?" + "s=" + tickerList + "&" + "f=" + attributeList;
+        System.out.println("Query url: " + urlString);
+        HttpGet httpGet = new HttpGet(urlString);
 
         try {
 
-            HttpResponse response = httpclient.execute(httpget);
+            HttpResponse response = httpclient.execute(httpGet);
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 String stringResponse = EntityUtils.toString(entity);
@@ -67,6 +68,8 @@ public class YahooQuoteService implements QuoteService {
     }
 
     
+    private static final String ATTRIBUTE_SEPARATOR = ",";
+    
     /*
      * The response comes back as a csv. Parse it out
      * 
@@ -77,15 +80,22 @@ public class YahooQuoteService implements QuoteService {
     
         List<HashMap<QuoteAttribute, String>> result = new ArrayList<>();
         
+        // Each line is the response for one security
         String[] lines = response.split("\n");
+        
         for (String line : lines) {
-            String[] items = line.split(",");
+            
+            // Results for the attributes come back in the order requested, each separated by a comma
+            String[] items = line.split(ATTRIBUTE_SEPARATOR);
+            
             HashMap<QuoteAttribute, String> lineItem = new HashMap<>();
             int i = 0;
             for (String item : items) {
                 lineItem.put(quoteAttributes.get(i++), item);
             }
+            
             result.add(lineItem);
+            
         }
         
         return result;
@@ -94,9 +104,11 @@ public class YahooQuoteService implements QuoteService {
     
     
 
+    private static final String SECURITY_SEPARATOR = "+";
+    
     /*
      * Convert the list of securities provided by the user into a Yahoo-formated list
-     * that can be sent to the Yahoo service.
+     * that can be sent to the Yahoo service: a "+" separated list of Strings
      */
     private String securityListToString(List<String> securityList) {
         String separator = "";
@@ -128,6 +140,33 @@ public class YahooQuoteService implements QuoteService {
                     break;
                 case LAST_TRADE_PRICE:
                     sb.append("l1");
+                    break;
+                case BOOK_VALUE:
+                    sb.append("b4");
+                    break;
+                case EARNINGS_PS:
+                    sb.append("e");
+                    break;
+                case DIVIDEND_PS:
+                    sb.append("d");
+                    break;
+                case EX_DIVIDEND_DATE:
+                    sb.append("q");
+                    break;
+                case DIVIDEND_DATE:
+                    sb.append("r1");
+                    break;
+                case DIVIDEND_YIELD:
+                    sb.append("y");
+                    break;
+                case PRICE_SALES:
+                    sb.append("p5");
+                    break;
+                case PRICE_BOOK:
+                    sb.append("p6");
+                    break;
+                case PRICE_EARNINGS:
+                    sb.append("r");
                     break;
                 default: System.out.println("Warning: Unsupported attribute: " + attr);
             }

@@ -18,19 +18,22 @@ public interface QuoteService {
 
 
     /**
-     * Provide a name for the service to distinguish it from other possible implementations
+     * Provide a name for the service that provides stock quotes.
+     * The name is used to distinguish it from other possible implementations.
      * 
      * @return Name of the service.
      */
     String getServiceName();
 
     /**
-     * A list of key-value pairs (query attribute - resultant value) for each security in the security list.
+     * Query this service which provides stock quotes. Query for each security supplied in the parameter list,
+     * and for each one of the securities, retrieve information for each attributed requested in the quoteAttributes
+     * list.
      * 
      * @param securityList List of securities to query
-     * @param quoteAttributes Attribute to query for.
+     * @param quoteAttributes A list of attribute to look up for each security
      * 
-     * @return A list of key-value pairs (query attribute - resultant value) for each security in the security list.
+     * @return A list of key-value pairs (query attribute -> resultant value) for each security in the security list.
      * The result list may be smaller than the supplied list if the security was not found at the quote service.
      */
     List<HashMap<QuoteAttribute, String>> executeQuery(List<String> securityList, List<QuoteAttribute> quoteAttributes);

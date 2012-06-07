@@ -2,7 +2,7 @@ package com.accounted4.stockquote.api;
 
 
 /**
- * Thrown by the quote service.
+ * Any error accessing the quote service can be wrapped in a QuoteServiceException.
  * 
  * @author Glenn Heinze <glenn@gheinze.com>
  */
