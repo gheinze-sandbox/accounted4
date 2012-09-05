@@ -139,7 +139,8 @@ public final class Money implements Serializable, Comparable {
         this.roundingMode = roundingMode;
         
         // Remove any excess decimal places in the amount according to roundingMode rules
-        this.amount = amount.setScale(currency.getDefaultFractionDigits(), roundingMode);
+        BigDecimal partiallyTruncatedAmount = amount.setScale(currency.getDefaultFractionDigits() * 2 + 1, RoundingMode.HALF_UP);
+        this.amount = partiallyTruncatedAmount.setScale(currency.getDefaultFractionDigits(), roundingMode);
         
     }
     
@@ -283,7 +284,7 @@ public final class Money implements Serializable, Comparable {
      * original object, but an amount multiplied by the multiplicand.
      */
     public Money multiply(final double multiplicand) {
-        final BigDecimal result = getAmount().multiply(new BigDecimal(multiplicand));
+        final BigDecimal result = getAmount().multiply(BigDecimal.valueOf(multiplicand));
         return new Money(result, getCurrency(), getRoundingMode() );
     }
 
@@ -376,7 +377,7 @@ public final class Money implements Serializable, Comparable {
             return false;
         }
         final Money other = (Money) obj;
-        if (this.amount != other.amount && ( this.amount == null || !this.amount.equals(other.amount) )) {
+        if (this.amount != other.amount && ( this.amount == null || 0 != this.amount.compareTo(other.amount) )) {
             return false;
         }
         if (this.currency != other.currency && ( this.currency == null || !this.currency.equals(other.currency) )) {
