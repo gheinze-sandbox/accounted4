@@ -1,0 +1,9 @@
+.\core\extensions.sql
+.\core\schema_purge.sql
+.\core\audit.sql
+.\core\tia_schema.sql
+.\core\installation_support_tools.sql
+.\core\base.sql
+.\core\user_account\user_account.sql
+.\core\user_account\user_role.sql
+.\core\user_account\user_delegate.sql
