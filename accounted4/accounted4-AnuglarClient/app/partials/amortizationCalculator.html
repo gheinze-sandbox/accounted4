@@ -1,0 +1,174 @@
+<div class="span6 offset1">
+
+    <h3>Loan Details</h3>
+    
+    <!--
+      well:             bootstrap:  indent the form
+      form-horizontal:  bootstrap:  label-control horizontal layout
+      css-form:         custom:     border dirty and invalid controls
+      novalidate:       turn off native form validation
+    -->
+    <form class="well form-horizontal css-form" name="amForm" novalidate >
+
+        <div class="control-group">
+            <label class="control-label" for="startDate">Start Date</label>
+            <div class="controls">
+                <input class="span2" id="startDate" type="date"
+                       data-ng-model="formModel.startDate" 
+                       data-ng-change="formModel.setAdjustmentDate()"
+                       required />
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="adjustmentDate">Adjustment Date</label>
+            <div class="controls">
+                <input class="span2" id="adjustmentDate" type="date"
+                       data-ng-model="formModel.adjustmentDate"
+                       required />
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="termInMonths">Term (months)</label>
+            <div class="controls">
+                <input class="span1" id="termInMonths" type="number"
+                       min="1" max="{{formModel.maxTermInMonths}}"
+                       data-ng-model="formModel.termInMonths"
+                       required />
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="interestType">Interest Type:</label>
+            <div class="controls" id="interestType">
+                <label class="radio">
+                    <input type="radio" name="interestOnly"
+                           data-ng-model="formModel.interestOnly"
+                           data-ng-value="true" />Interest Only&nbsp
+                </label>
+                <label class="radio">
+                    <input type="radio" name="interestOnly" 
+                           data-ng-model="formModel.interestOnly"
+                           data-ng-value="false"/>Interest and Principal
+                </label>
+            </div>
+        </div>
+
+        <fieldset class="well" data-ng-hide="formModel.interestOnly">
+
+            <div class="control-group">
+                <label class="control-label" for="amortizationPeriodYears">Amortization Years:</label>
+                <div class="controls">
+                    <input class="span1" id="amortizationPeriodYears" type="number"
+                           min="0" max="{{formModel.maxAmortizationYears}}"
+                           data-ng-model="formModel.amortizationPeriodYears" />
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="amortizationPeriodMonths">Amortization Months:</label>
+                <div class="controls">
+                    <input class="span1" id="amortizationPeriodMonths"
+                           type="number" min="0" max="12"
+                           data-ng-model="formModel.amortizationPeriodMonths" />
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="compoundingPeriod">Compounding Period:</label>
+                <div class="controls">
+                    <select class="span2" id="compoundingPeriod"
+                            data-ng-model="formModel.compoundingPeriod"
+                            data-ng-options="c.name for c in formModel.compoundingPeriods"></select><br>
+                </div>
+            </div>
+
+        </fieldset>
+
+
+        <div class="control-group">
+            <label class="control-label" for="amount">Mortgage Amount:</label>
+            <div class="controls">
+                <input class="span2" id="amount" type="text" size="30"
+                       placeholder="mortgage amount"
+                       data-ng-model="formModel.amount"
+                       required /> 
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="interestRate">Interest Rate:</label>
+            <div class="controls">
+                <input class="input-mini" id="interestRate" type="number"
+                       min="0" max="{{formModel.maxInterestRate}}" step="{{formModel.interestRateStep}}"
+                       data-ng-model="formModel.interestRate"
+                       required />
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="monthlyPayment">Monthly Payment:</label>
+            <div class="controls">
+                <input class="span2" id="monthlyPayment" type="text" size="30"
+                       placeholder="monthly payment"
+                       data-ng-model="formModel.monthlyPayment" /> 
+                <button class="btn btn-primary"
+                        ng-disabled="amForm.$invalid"
+                        data-ng-click="formModel.calculateMonthlyPayment()">Calculate</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="controls">
+                <button class="btn"
+                        ng-disabled="amForm.$invalid"
+                        data-ng-click="formModel.generateAmSchedule()">Generate Schedule</button>
+            </div>
+        </div>
+        
+        
+    </form>
+
+
+    
+    <div ui-modal class="fade" data-ng-model="formModel.scheduleShown" >
+
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>Schedule</h3>
+        </div>
+    
+        <div class="modal-body">    
+            
+            <table class="table table-striped">
+
+                <tr>
+                    <th>Payment</th>
+                    <th>Date</th>
+                    <th>Interest</th>
+                    <th>Principal</th>
+                    <th>Balance</th>
+                </tr>
+                
+                <tr data-ng-repeat="payment in formModel.schedule">
+                    <td>{{payment.paymentNumber}}</td>
+                    <td>{{payment.date | date:'yyyy-MM-dd'}}</td>
+                    <td>{{payment.interest.amount | currency}}</td>
+                    <td>{{payment.principal.amount | currency}}</td>
+                    <td>{{payment.balance.amount | currency}}</td>
+                </tr>
+
+            </table>
+
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn" data-ng-click="formModel.dismissSchedule()">Close</button>
+        </div>            
+
+    </div>
+
+    
+</div>
+

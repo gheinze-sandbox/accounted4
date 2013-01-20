@@ -1,0 +1,51 @@
+<!doctype html>
+
+<html lang="en" data-ng-app="a4App">
+
+    <head>
+        
+        <meta charset="utf-8">
+        <title>Accounted4</title>
+
+        <link rel="stylesheet" href="bootstrap/css/bootstrap_ricefields.css" type="text/css">
+        <link rel="stylesheet" href="css/app.css" type="text/css">
+        
+    </head>
+    
+    <body>
+       
+        <!-- Header -->
+        <ul class="menu">
+            <li><a href="#/view1">view1</a></li>
+            <li><a href="#/view2">view2</a></li>
+            <li><a href="#/amortizationCalculator">Amortization Calculator</a></li>
+        </ul>
+
+        <!-- Body -->
+        <div class="container" data-ng-view></div>
+
+        <!-- Footer -->
+        <div>Accounted4: v<span data-app-version></span></div>
+
+        
+        <script src="lib/jquery/jquery-1.8.3.min.js"></script>
+        <script src="lib/jquery/jquery-ui-1.10.0.custom.min.js"></script>
+
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+                
+        <!-- Anuglar libraries that drive the app -->
+        <script src="lib/angular/angular.min.js"></script>
+        <script src="lib/angular/angular-resource.min.js"></script>
+
+        <!-- The actual application components -->
+        <script src="js/app.js"></script>
+        <script src="js/services.js"></script>
+        <script src="js/controllers.js"></script>
+        <script src="js/filters.js"></script>
+        <script src="js/directives.js"></script>
+        
+        <script src="lib/angular/angular-ui.min.js"></script>
+        
+    </body>
+    
+</html>
