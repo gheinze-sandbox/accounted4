@@ -1,4 +1,16 @@
+DROP TYPE IF EXISTS user_account_status CASCADE;
 CREATE TYPE user_account_status AS ENUM('ACTIVE', 'LOCKED', 'RETIRED');
+
+DROP TYPE IF EXISTS user_account_limited CASCADE;
+CREATE TYPE user_account_limited AS (
+   id            integer
+  ,name          character varying(32)
+  ,status        tia.user_account_status
+  ,display_name  character varying(64)
+  ,email         character varying(64)
+);
+
+
 
 CREATE TABLE user_account(
   name               VARCHAR(32)  NOT NULL CONSTRAINT user_account_name UNIQUE
@@ -29,15 +41,7 @@ SELECT ist_bk('user_account', ARRAY['name']);
 SELECT audit.audit_table('user_account');
 
 
-DROP TYPE IF EXISTS user_account_limited CASCADE;
 
-CREATE TYPE user_account_limited AS (
-   id            integer
-  ,name          character varying(32)
-  ,status        tia.user_account_status
-  ,display_name  character varying(64)
-  ,email         character varying(64)
-);
 
 
 -- Interface:

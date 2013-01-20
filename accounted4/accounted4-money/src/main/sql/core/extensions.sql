@@ -20,3 +20,5 @@ END
 $$; 
    
 CREATE EXTENSION IF NOT EXISTS pgcrypto SCHEMA pgcrypto;
+
+GRANT USAGE ON SCHEMA pgcrypto TO PUBLIC;

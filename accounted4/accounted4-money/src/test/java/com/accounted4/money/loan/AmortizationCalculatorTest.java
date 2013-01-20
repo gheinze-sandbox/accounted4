@@ -178,7 +178,7 @@ public class AmortizationCalculatorTest {
             System.out.println("" + payment);
         }
         assertEquals("Amortized payment count", termInMonths, resultCount);
-        assertEquals("Amortized Interest total", new Money("45681.38"), interestTotal);
+        assertEquals("Amortized Interest total", new Money("45681.32"), interestTotal);
 
     }
 

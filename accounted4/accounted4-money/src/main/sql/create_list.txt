@@ -1,7 +1,8 @@
 .\core\extensions.sql
-.\core\schema_purge.sql
+.\core\purge_schemas.sql
+.\core\create_schemas.sql
+.\core\switch_user_to_tia.sql;
 .\core\audit.sql
-.\core\tia_schema.sql
 .\core\installation_support_tools.sql
 .\core\base.sql
 .\core\user_account\user_account.sql

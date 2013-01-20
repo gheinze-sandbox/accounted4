@@ -10,10 +10,10 @@
 --   http://wiki.postgresql.org/wiki/Audit_trigger
 -- but has been completely rewritten.
 
-CREATE EXTENSION IF NOT EXISTS hstore;
+--CREATE EXTENSION IF NOT EXISTS hstore;
 
-CREATE SCHEMA audit;
-REVOKE ALL ON SCHEMA audit FROM public;
+--CREATE SCHEMA audit;
+--REVOKE ALL ON SCHEMA audit FROM public;
 
 COMMENT ON SCHEMA audit IS 'Out-of-table audit/history logging tables and trigger functions';
 
@@ -54,7 +54,7 @@ CREATE TABLE audit.logged_actions (
     statement_only    boolean not null
 );
 
-REVOKE ALL ON audit.logged_actions FROM public;
+--REVOKE ALL ON audit.logged_actions FROM public;
 
 COMMENT ON TABLE audit.logged_actions IS 'History of auditable actions on audited tables, from audit.if_modified_func()';
 COMMENT ON COLUMN audit.logged_actions.event_id IS 'Unique identifier for each auditable event';
@@ -140,9 +140,9 @@ BEGIN
     RETURN NULL;
 END;
 $body$
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = pg_catalog, public;
+LANGUAGE plpgsql;
+--SECURITY DEFINER
+--SET search_path = pg_catalog, public;
 
 
 COMMENT ON FUNCTION audit.if_modified_func() IS $body$

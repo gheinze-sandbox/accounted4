@@ -166,7 +166,11 @@ public class AmortizationCalculator {
         
         public InterestOnlyIterator(AmortizationAttributes terms) {
             super(terms);
-            extraPrincipal = regularPayment.subtract(calculatedMonthlyPaymentMoney);
+            if ( regularPayment.greaterThan(calculatedMonthlyPaymentMoney) ) {
+                extraPrincipal = regularPayment.subtract(calculatedMonthlyPaymentMoney);
+            } else {
+                extraPrincipal = zeroMoney;
+            }
         }
 
         
@@ -224,6 +228,7 @@ public class AmortizationCalculator {
         private final double j;   // period rate: ie rate until compounding trigger (rate for 6 months for semi-annual, rate for 1 month for monthly)
         private final double overpayment;
         private double thePayment;
+        private Money thePaymentMoney;
         
         public AmortizedIterator(AmortizationAttributes terms) {
             super(terms);
@@ -237,11 +242,14 @@ public class AmortizationCalculator {
             j = getPeriodRate(terms.getInterestRate(), terms.getCompoundingPeriodsPerYear());
 
             thePayment = regularPayment.getAmount().doubleValue();
-            if ( Math.round( (thePayment - calculatedMonthlyPayment) * truncationFactor ) == 0L ) {
+            if ( Math.round( (thePayment - calculatedMonthlyPayment) * truncationFactor ) <= 0L ) {
+                // The payment has to be at least as much as the calculated monthly payment
                 thePayment = calculatedMonthlyPayment;
             }
             
             overpayment = thePayment - calculatedMonthlyPayment;
+            thePaymentMoney = new Money( BigDecimal.valueOf(thePayment), currency, roundingMode);
+            
         }
         
         
@@ -260,7 +268,7 @@ public class AmortizationCalculator {
             balance -= principal;
             Money balanceMoney = new Money(BigDecimal.valueOf(balance), currency, roundingMode);
             
-            Money principalMoney = regularPayment.subtract(interest);
+            Money principalMoney = thePaymentMoney.subtract(interest);
             
             ScheduledPayment payment = new ScheduledPayment();
             payment.setPaymentNumber(paymentNumber);
@@ -276,6 +284,25 @@ public class AmortizationCalculator {
     }
     
     
+    public static Money getMonthlyPayment(AmortizationAttributes amAttrs) {
+
+        double monthlyPayment;
+        
+        if (amAttrs.isInterestOnly()) {
+            monthlyPayment = AmortizationCalculator.getInterestOnlyMonthlyPayment(amAttrs.getLoanAmount().getAmount().doubleValue(), amAttrs.getInterestRate());
+        } else {
+            monthlyPayment = AmortizationCalculator.getAmortizedMonthlyPayment(
+                    amAttrs.getLoanAmount(),
+                    amAttrs.getInterestRate(),
+                    amAttrs.getCompoundingPeriodsPerYear(),
+                    amAttrs.getAmortizationPeriodMonths()
+                    );
+        }
+        
+        return new Money(BigDecimal.valueOf(monthlyPayment));
+
+    }
+
     
     /**
      * Given an amount and an annual interest rate, return the monthly payment
