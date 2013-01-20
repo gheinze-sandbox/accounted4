@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       
+       xsi:schemaLocation=
+            "http://www.springframework.org/schema/mvc      http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+             http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+             http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.0.xsd
+             http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
+            ">
+    
+    
+    <!-- Handle requests for static resources without extra DispatcherServlet overhead -->
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+    
+    <!-- Bean creation via annotations -->
+    <mvc:annotation-driven/>
+    
+    <!-- Location to scan for annotation based bean creation -->
+    <context:component-scan base-package="com.accounted4.midtier" />
+    
+    <!-- Use JNDI to find the database connection -->
+    <jee:jndi-lookup id="dataSource" jndi-name="/jdbc/accounted4" resource-ref="true" />
+    
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+        <constructor-arg ref="dataSource" />
+    </bean>
+    
+    
+</beans>

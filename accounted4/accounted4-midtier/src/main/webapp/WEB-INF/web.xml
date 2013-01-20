@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    
+	<display-name>accounted4-midtier</display-name>
+
+        <!-- Add the CORS filter to add the header option on all responses to allow JSON queries from outside domain -->
+        
+        <filter>
+            <filter-name>CORS</filter-name>
+            <filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
+            
+            <init-param>
+                <param-name>cors.supportedHeaders</param-name>
+                <param-value>Content-Type, Accept, X-Requested-With, Origin</param-value>
+            </init-param>
+            
+        </filter>
+        
+        <filter-mapping>
+            <filter-name>CORS</filter-name>
+            <url-pattern>/*</url-pattern>
+        </filter-mapping>
+        
+        
+        <!-- Spring WebApplicationContext is created by the ContextLoaderListener.
+             The ContextLoaderListener uses the contextConfigLocation parameter to
+             locate any spring context configuration files.
+        -->
+        <context-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/spring-config/*-context.xml</param-value>
+        </context-param>
+  
+        
+        <!-- Without this listener set as the initial listener, Spring log files will complain
+             that log4j was not configured properly [yet]. This assumes the log4j configuration
+             can be found on the classpath. If the log4j configuration is going to be parked
+             under the WEBINF folder somewhere, then a context-param needs to be added to let
+             the Log4jConfigListener know where to find the configuration file. Example:
+                <context-param>
+                    <param-name>log4jConfigLocation</param-name>
+                    <param-value>/WEB-INF/resources/log4j.xml</param-value>
+                </context-param>              
+        -->
+        <listener>
+            <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+        </listener>
+
+
+        <!-- Creation of Spring container (implicitly uses contextConfigLocation -->
+        <listener>
+            <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+        </listener>
+        
+
+	<servlet>
+		<servlet-name>accounted4</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring-config/accounted4-context.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+        
+	<servlet-mapping>
+		<servlet-name>accounted4</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+        
+        
+</web-app>
