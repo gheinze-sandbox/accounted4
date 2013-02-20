@@ -13,8 +13,9 @@
         <div class="control-group">
             <label class="control-label" for="startDate">Start Date</label>
             <div class="controls">
-                <input class="span2" id="startDate" type="date"
+                <input class="span2" id="startDate" type="text"
                        data-ng-model="formModel.startDate" 
+                       data-ui-date="formModel.datePickerOptions"
                        data-ng-change="formModel.setAdjustmentDate()"
                        required />
             </div>
@@ -23,9 +24,11 @@
         <div class="control-group">
             <label class="control-label" for="adjustmentDate">Adjustment Date</label>
             <div class="controls">
-                <input class="span2" id="adjustmentDate" type="date"
+                <input class="span2" id="adjustmentDate" type="text"
                        data-ng-model="formModel.adjustmentDate"
-                       required />
+                       data-ui-date="formModel.datePickerOptions"
+                       required
+                       />
             </div>
         </div>
 
@@ -90,7 +93,7 @@
         <div class="control-group">
             <label class="control-label" for="amount">Mortgage Amount:</label>
             <div class="controls">
-                <input class="span2" id="amount" type="text" size="30"
+                <input class="span2" id="amount" type="number" size="30"
                        placeholder="mortgage amount"
                        data-ng-model="formModel.amount"
                        required /> 
@@ -110,7 +113,7 @@
         <div class="control-group">
             <label class="control-label" for="monthlyPayment">Monthly Payment:</label>
             <div class="controls">
-                <input class="span2" id="monthlyPayment" type="text" size="30"
+                <input class="span2" id="monthlyPayment" type="number" size="30"
                        placeholder="monthly payment"
                        data-ng-model="formModel.monthlyPayment" /> 
                 <button class="btn btn-primary"

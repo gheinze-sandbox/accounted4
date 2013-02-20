@@ -17,77 +17,118 @@ MyCtrl2.$inject = [];
 
 function AmortizationCalculatorCtrl($scope, $filter, AmortizationService) {
     
+    // --------------------------------------
+    // Model containing the values stored in the form
+    // --------------------------------------
+
     var formModel = {};
     
     $scope.formModel = formModel;
+
+
+    // --------------------------------------
+    // Constants used by the form
+    // --------------------------------------
     
-    var today = new Date();
-
-    
-    // HTML5 Date input control expects ISO date format for value: YYYY-MM-DD
-    formModel.startDate = $filter('date')(today, 'yyyy-MM-dd');
-
-
-    // The adjustment date is recalculated each time the startDate is modified
-    formModel.setAdjustmentDate = function() {
-        
-        var newStartDate = new Date(formModel.startDate);
-
-        var year = newStartDate.getFullYear();
-        var month = newStartDate.getMonth();
-        var dayOfMonth = newStartDate.getDate();
-
-        var newAdjustmentDate;
-        
-        // Always adjust to the following 1st or 15th of the month if not already on the 1st or 15th
-        if (dayOfMonth > 15) {
-            newAdjustmentDate = new Date(year, month + 1, 1);
-        } else if (dayOfMonth > 1 && dayOfMonth < 15) {
-            newAdjustmentDate = new Date(year, month, 15);
-        } else {
-            newAdjustmentDate = new Date(formModel.startDate);
-        }
-
-        formModel.adjustmentDate = $filter('date')(newAdjustmentDate, 'yyyy-MM-dd');
-
-    };
-
-
-    // Trigger an initial adjustment date update
-    formModel.setAdjustmentDate();
-    
-    
-    formModel.termInMonths = 12;         // default 1 year term
-    formModel.maxTermInMonths = 12 * 30; // mas 30 year term
- 
-    formModel.interestOnly = true;
-    
-    formModel.amortizationPeriodYears = 20;
+    formModel.dateFormat = /^(19\d{2})|(20\d{2})-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(0?[1-9]|[12][0-9]|3[01])$/;
+    formModel.maxTermInMonths = 12 * 30; // max 30 year term
     formModel.maxAmortizationYears = 30;
-    
-    formModel.amortizationPeriodMonths = 0;
     
     formModel.compoundingPeriods = [
         {name:'monthly', periodsPerYear:'12', comment:'American mortgage default'},
         {name:'semi-annually', periodsPerYear:'2', comment:'Canadian mortgage default'},
         {name:'annually', periodsPerYear:'1', comment:''}
     ];
-
-    formModel.compoundingPeriod = formModel.compoundingPeriods[1];
-
-    formModel.amount = "20000";
     
-    formModel.interestRate = 10;         // default 10%
     formModel.maxInterestRate = 25;
     formModel.interestRateStep = 0.25;
 
-    formModel.monthlyPayment = "";
+    formModel.datePickerOptions = {
+         dateFormat: 'yy-M-dd'
+        ,changeMonth: true
+        ,changeYear: true
+        ,buttonImage: 'img/office-calendar.png'
+        ,buttonImageOnly: false
+        ,showOn: "both" // "button" or "focus" or "both"
+    };
+
+    // --------------------------------------
+    // Utility Functions
+    // --------------------------------------
+    
+    // Given a Date input, find the nearest 1st or 15th of the month
+    // on or after the given date
+    var calculateAdjustmentDate = function (baseDate) {
+        
+        if (undefined === baseDate || null === baseDate ||  ! (baseDate instanceof Date) ) {
+            baseDate = new Date();
+        }
+        
+        var year = baseDate.getFullYear();
+        var month = baseDate.getMonth();
+        var dayOfMonth = baseDate.getDate();
+
+        if (dayOfMonth > 15) {
+            month = month + 1;
+            dayOfMonth = 1;
+        } else if (dayOfMonth > 1 && dayOfMonth < 15) {
+            dayOfMonth = 15;
+        }
+        
+        return new Date(year, month, dayOfMonth);
+
+    };
     
     
-    formModel.schedule = [];
-    formModel.scheduleShown = false;
+    // Populate the form based on provided form values
+    formModel.setFormValues = function(formValues) {
+        
+        formModel.startDate = formValues.startDate;
+        formModel.adjustmentDate = formValues.adjustmentDate;
+        formModel.termInMonths = formValues.termInMonths;
+        formModel.interestOnly = formValues.interestOnly;
+        formModel.amortizationPeriodYears = formValues.amortizationPeriodYears;
+        formModel.amortizationPeriodMonths = formValues.amortizationPeriodMonths;
+        formModel.compoundingPeriod = formValues.compoundingPeriod;
+        formModel.amount = formValues.amount;
+        formModel.interestRate = formValues.interestRate;
+        formModel.monthlyPayment = formValues.monthlyPayment;
+
+    };
     
     
+    // Generate an object representing the form values
+    formModel.extractData = function() {
+
+        var terms = {};
+        
+        terms.startDate = formModel.startDate;
+        terms.adjustmentDate = formModel.adjustmentDate;
+        terms.termInMonths = formModel.termInMonths;
+        terms.interestOnly = formModel.interestOnly;
+        terms.amortizationPeriodMonths = formModel.amortizationPeriodYears * 12 + formModel.amortizationPeriodMonths;
+        terms.compoundingPeriodsPerYear = formModel.compoundingPeriod.periodsPerYear;
+        terms.loanAmount = formModel.amount;
+        terms.interestRate = formModel.interestRate;
+        
+        terms.regularPayment = formModel.monthlyPayment.length > 0 ? formModel.monthlyPayment : "0";
+
+        return terms;
+        
+    };
+
+
+    
+    // --------------------------------------
+    // Form handlers
+    // --------------------------------------
+    
+    // The adjustment date is recalculated each time the startDate is modified
+    formModel.setAdjustmentDate = function() {
+        formModel.adjustmentDate = calculateAdjustmentDate(formModel.startDate);
+    };
+
+
     formModel.calculateMonthlyPayment = function() {
         
         AmortizationService.monthlyPayment(
@@ -99,6 +140,36 @@ function AmortizationCalculatorCtrl($scope, $filter, AmortizationService) {
     };
 
 
+
+    // --------------------------------------
+    // Form Initialization
+    // --------------------------------------
+    
+    // Create an object representing the initial, default state of the form
+    var initialFormValues = {};
+    initialFormValues.startDate = new Date();
+    initialFormValues.adjustmentDate = calculateAdjustmentDate(initialFormValues.startDate);
+    initialFormValues.termInMonths = 12;  // default 1 year term
+    initialFormValues.interestOnly = true;
+    initialFormValues.amortizationPeriodYears = 20;
+    initialFormValues.amortizationPeriodMonths = 0;
+    initialFormValues.compoundingPeriod = formModel.compoundingPeriods[1];
+    initialFormValues.amount = "20000";
+    initialFormValues.interestRate = 10; // default 10%
+    initialFormValues.monthlyPayment = "";
+
+    
+    formModel.setFormValues(initialFormValues);
+    
+    
+    // --------------------------------------
+    // Schedule pop-up setup
+    // --------------------------------------
+    
+    formModel.schedule = [];
+    formModel.scheduleShown = false;
+    
+    
     formModel.generateAmSchedule = function() {
         AmortizationService.amSchedule(
                 formModel.extractData()
@@ -115,27 +186,6 @@ function AmortizationCalculatorCtrl($scope, $filter, AmortizationService) {
         formModel.schedule = [];
     };
 
-
-    // Generate an object representing the form values
-    formModel.extractData = function() {
-
-        var terms = {};
-        
-        terms.loanAmount = formModel.amount;
-        terms.startDate = formModel.startDate;
-        terms.adjustmentDate = formModel.adjustmentDate;
-        terms.termInMonths = formModel.termInMonths;
-        terms.interestOnly = formModel.interestOnly;
-        terms.amortizationPeriodMonths = formModel.amortizationPeriodYears * 12 + formModel.amortizationPeriodMonths;
-        terms.compoundingPeriodsPerYear = formModel.compoundingPeriod.periodsPerYear;
-        terms.interestRate = formModel.interestRate;
-        
-        terms.regularPayment = formModel.monthlyPayment.length > 0 ? formModel.monthlyPayment : "0";
-
-        
-        return terms;
-        
-    };
 
 }
 

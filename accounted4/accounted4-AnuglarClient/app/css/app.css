@@ -31,10 +31,10 @@
 
 /* Chrome date box needs room to accomodate drop down button
 */
-input[type="date"],
+/*input[type="date"],
 .uneditable-input {
   padding-right: 16px;
-}
+}*/
 
 /* Modal dialog box: fix height, add auto-scrolling
  */
@@ -53,4 +53,13 @@ input[type="date"],
 
 .css-form input.ng-valid.ng-dirty {
     border-color:  #78FA89;
+}
+
+
+/* Chrome: ditch the spinner on number inputs
+ */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
