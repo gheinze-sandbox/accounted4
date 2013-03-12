@@ -79,6 +79,25 @@ function AmortizationCalculatorCtrl($scope, $filter, AmortizationService) {
 
     };
     
+    // JAXB unmarshalling into Joda date expects YYYY-MM-DD format string
+    var convertDateToJodaString = function(inDate) {
+        
+        var separator = "-";
+        
+        var year = inDate.getFullYear().toString();
+        
+        // Javascript month is 0-based, change it to 1-based, add a leading "0"
+        // but then only take the last two digits ie "01" - > "01", "012" -> "12"
+        var month = "0" + (inDate.getMonth() + 1).toString();
+        month = month.substr(month.length - 2);
+        
+        var day = "0" + inDate.getDate();
+        day = day.substr(day.length - 2);
+        
+        return year + separator + month + separator + day;
+        
+    };
+    
     
     // Populate the form based on provided form values
     formModel.setFormValues = function(formValues) {
@@ -102,16 +121,19 @@ function AmortizationCalculatorCtrl($scope, $filter, AmortizationService) {
 
         var terms = {};
         
-        terms.startDate = formModel.startDate;
-        terms.adjustmentDate = formModel.adjustmentDate;
+        terms.startDate = convertDateToJodaString(formModel.startDate);
+        terms.adjustmentDate = convertDateToJodaString(formModel.adjustmentDate);
+                  
         terms.termInMonths = formModel.termInMonths;
         terms.interestOnly = formModel.interestOnly;
         terms.amortizationPeriodMonths = formModel.amortizationPeriodYears * 12 + formModel.amortizationPeriodMonths;
         terms.compoundingPeriodsPerYear = formModel.compoundingPeriod.periodsPerYear;
-        terms.loanAmount = formModel.amount;
+        terms.loanAmount = formModel.amount.toString();
         terms.interestRate = formModel.interestRate;
         
-        terms.regularPayment = formModel.monthlyPayment.length > 0 ? formModel.monthlyPayment : "0";
+        // The regularPayment is not necessarily calculated (may be blank)
+        // If empty, setting it to "0" will force the calculator increase to the minimum payment
+        terms.regularPayment = (typeof formModel.monthlyPayment === 'string') ? "0" : formModel.monthlyPayment.toString();
 
         return terms;
         
@@ -154,7 +176,7 @@ function AmortizationCalculatorCtrl($scope, $filter, AmortizationService) {
     initialFormValues.amortizationPeriodYears = 20;
     initialFormValues.amortizationPeriodMonths = 0;
     initialFormValues.compoundingPeriod = formModel.compoundingPeriods[1];
-    initialFormValues.amount = "20000";
+    initialFormValues.amount = 20000;
     initialFormValues.interestRate = 10; // default 10%
     initialFormValues.monthlyPayment = "";
 
@@ -165,11 +187,13 @@ function AmortizationCalculatorCtrl($scope, $filter, AmortizationService) {
     // --------------------------------------
     // Schedule pop-up setup
     // --------------------------------------
-    
+
+    // maintain state on visibility of schedule
     formModel.schedule = [];
     formModel.scheduleShown = false;
     
     
+    // Amortization schedule dialog generation
     formModel.generateAmSchedule = function() {
         AmortizationService.amSchedule(
                 formModel.extractData()
@@ -184,6 +208,12 @@ function AmortizationCalculatorCtrl($scope, $filter, AmortizationService) {
     formModel.dismissSchedule = function() {
         formModel.scheduleShown = false;
         formModel.schedule = [];
+    };
+
+
+    // Amortization schedule as a pdf document
+    formModel.generateAmSchedulePdf = function() {
+        AmortizationService.amSchedulePdf( formModel.extractData() );
     };
 
 

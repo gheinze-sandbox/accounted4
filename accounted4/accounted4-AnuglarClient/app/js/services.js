@@ -10,7 +10,7 @@ angular.module('a4App.services', []).
 
 
 
-angular.module('a4App.services').factory('AmortizationService', function($http) {
+angular.module('a4App.services').factory('AmortizationService', function($http, $window) {
     
     return {
         
@@ -57,9 +57,38 @@ angular.module('a4App.services').factory('AmortizationService', function($http) 
                 
                 );
             
+        },
+    
+
+        // For pdf functionality, post the attributes to the server. Then open
+        // a new browser window requesting the doc id returned by the previous post.
+        amSchedulePdf : function(amAttributes) {
+            
+            var httpPostConfig = {
+                method: 'POST'
+                        , url: 'http://localhost:8084/accounted4-midtier/amortization/prepareSchedule'
+                        , data: amAttributes
+            };
+
+            $http(httpPostConfig).success(
+                    
+                    function(data, status, headers, config) {
+                        var url = "http://localhost:8084/accounted4-midtier/amortization/showSchedule/pdf/" + data.id;
+                        $window.open(url);
+                    }
+                
+                ).error(
+                        
+                    function(data, status, headers, config) {
+                        alert("Amortization service failed to return amortization schedule.");
+                    }
+                
+                );
+            
         }
-    
-    
+                
+                
+                
     };
 
 });

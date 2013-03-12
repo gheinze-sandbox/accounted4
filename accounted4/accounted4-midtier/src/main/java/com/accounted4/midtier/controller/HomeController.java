@@ -2,15 +2,20 @@ package com.accounted4.midtier.controller;
 
 
 import com.accounted4.midtier.service.AmortizationService;
+import com.accounted4.midtier.service.IdBean;
 import com.accounted4.money.Money;
 import com.accounted4.money.loan.AmortizationAttributes;
 import com.accounted4.money.loan.ScheduledPayment;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -40,7 +45,7 @@ public class HomeController {
 
 
     /**
-     * Helper class to allow the automarshalling of a List of beans into an XML format.
+     * Helper class to allow the auto-marshalling of a List of beans into an XML format.
      *
      * @param <T>
      */
@@ -249,7 +254,7 @@ public class HomeController {
 // ==============================================
 
     // Very fussy: all fields required, no tabs/line breaks
-    // http://localhost:8080/accounted4-midtier/amortizationSchedule.json
+    //http://localhost:8084/accounted4-midtier/amortization/schedule.json
     // Content-Type: application/json
     // {"loanAmount":"20000.00", "regularPayment":"200","startDate":"2013-01-05","adjustmentDate":"2013-01-15","termInMonths":"12","interestOnly":"true","amortizationPeriodMonths":"20","compoundingPeriodsPerYear":"2","interestRate":"10"}
     @RequestMapping(value = "/amortization/schedule.json", method = RequestMethod.POST, produces = "application/json")
@@ -266,5 +271,26 @@ public class HomeController {
         //return new SimpleEntry<>("monthlyPayment", amortizationService.getMonthlyPayment(amAttrs) );
     }
 
+
+    /**
+     * PDF generation is done in two parts:
+     *   o send in the attributes required to calculate the schedule, a document id is returned
+     *   o request the pdf document by id
+     */
+    @RequestMapping(value = "/amortization/prepareSchedule", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public IdBean prepareAmortizationSchedule(@RequestBody AmortizationAttributes amAttrs, HttpServletRequest request) {
+        String sessionId = request.getSession().getId();
+        IdBean result = amortizationService.cacheSchedule(sessionId, amAttrs);
+        return result;
+    }
+
+    
+    @RequestMapping(value = "/amortization/showSchedule/pdf/{id}", method = RequestMethod.GET, produces = "application/pdf")
+    public void getAmortizationSchedulePdf(@PathVariable String id, HttpServletResponse response)
+            throws IOException, JRException {
+        response.setContentType("application/pdf");
+        amortizationService.generateAmortizationSchedulePdf(new IdBean(id), response.getOutputStream());
+    }
 
 }

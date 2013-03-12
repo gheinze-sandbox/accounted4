@@ -6,9 +6,9 @@
        xmlns:jee="http://www.springframework.org/schema/jee"
        
        xsi:schemaLocation=
-            "http://www.springframework.org/schema/mvc      http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
-             http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-             http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            "http://www.springframework.org/schema/mvc      http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+             http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+             http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.2.xsd
              http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
             ">
     
@@ -17,8 +17,26 @@
     <mvc:resources mapping="/resources/**" location="/resources/" />
     
     <!-- Bean creation via annotations -->
-    <mvc:annotation-driven/>
     
+    <!--
+        For normally Jackson use, the converter does not need to be specified:
+        presence on the classpath is sufficient.
+        However, we wish to inform Jackson about custom JodaTime object mappings.
+        This is done by adding an objectMapper property to the Jackson converter.
+        The objectMapper will register itself with Jackson enabling auto-marshalling
+        of JodaTime constructs.
+    -->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.accounted4.midtier.controller.JodaObjectMapper" />
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+        
+       
     <!-- Location to scan for annotation based bean creation -->
     <context:component-scan base-package="com.accounted4.midtier" />
     
