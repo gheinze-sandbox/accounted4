@@ -1,0 +1,82 @@
+<div class="span6 offset1">
+
+    <h3>Party</h3>
+    
+    <!--
+      well:             bootstrap:  indent the form
+      form-horizontal:  bootstrap:  label-control horizontal layout
+      css-form:         custom:     border dirty and invalid controls
+      novalidate:       turn off native form validation
+    -->
+    <form class="well form-horizontal css-form" name="partyForm" novalidate >
+
+        <div class="control-group">
+            <label class="control-label" for="partyType">Party Type:</label>
+            <div class="controls" id="partyTypeControlId">
+                <label class="radio">
+                    <input type="radio" name="organization"
+                           ng-change="formModel.nameChanged()"
+                           data-ng-model="formModel.partyType"
+                           data-ng-value="formModel.ORGANIZATION_TYPE" />Organization or Multi-party
+                </label>
+                <label class="radio">
+                    <input type="radio" name="individual" 
+                           ng-change="formModel.nameChanged()"
+                           data-ng-model="formModel.partyType"
+                           data-ng-value="formModel.INDIVIDUAL_TYPE"/>Individual
+                </label>
+            </div>
+        </div>
+
+        <fieldset data-ng-hide="formModel.isIndividual()">
+            <div class="control-group">
+                <label class="control-label" for="organizationName">Organization:</label>
+                <div class="controls">
+                    <input class="input-mini" id="organizationName" type="text"
+                           ng-change="formModel.nameChanged()"
+                           data-ng-model="formModel.organizationName"
+                           required />
+                </div>
+            </div>
+        </fieldset>
+        
+        <fieldset data-ng-hide="formModel.isOrganization()">
+
+            <div class="control-group">
+                <label class="control-label" for="partyName">Last Name:</label>
+                <div class="controls">
+                    <input class="input-mini" id="lastName" type="text"
+                           ng-change="formModel.nameChanged()"
+                           data-ng-model="formModel.lastName"
+                           required />
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="partyName">First Name:</label>
+                <div class="controls">
+                    <input class="input-mini" id="firstName" type="text"
+                           ng-change="formModel.nameChanged()"
+                           data-ng-model="formModel.firstName"
+                           required />
+                </div>
+            </div>
+
+        </fieldset>
+        
+        <div class="control-group">
+            <label class="control-label" for="displayName">Display Name:</label>
+            <div class="controls">
+                <input class="input-mini" id="displayName" type="text"
+                       data-ng-model="formModel.displayName"
+                       required />
+            </div>
+        </div>
+
+    </form>
+
+
+    
+
+    
+</div>

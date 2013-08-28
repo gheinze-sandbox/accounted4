@@ -63,3 +63,72 @@ input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+
+/* Shrink the space between controls of a form from default 20px
+*/
+.form-horizontal .control-group {
+  margin-bottom: 10px;
+  *zoom: 1;
+}
+
+
+/* Shrink form fonts to 12px rather than 14px, and make things bold
+*/
+label,
+input,
+button,
+select,
+textarea {
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 20px;
+}
+label {
+  font-weight: normal;
+}
+input,
+button,
+select,
+textarea {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.form-search input,
+.form-inline input,
+.form-horizontal input,
+.form-search textarea,
+.form-inline textarea,
+.form-horizontal textarea,
+.form-search select,
+.form-inline select,
+.form-horizontal select,
+.form-search .help-inline,
+.form-inline .help-inline,
+.form-horizontal .help-inline,
+.form-search .uneditable-input,
+.form-inline .uneditable-input,
+.form-horizontal .uneditable-input,
+.form-search .input-prepend,
+.form-inline .input-prepend,
+.form-horizontal .input-prepend,
+.form-search .input-append,
+.form-inline .input-append,
+.form-horizontal .input-append {
+  display: inline-block;
+  *display: inline;
+  /* IE7 inline-block hack */
+
+  *zoom: 1;
+  margin-bottom: 0;
+  vertical-align: middle;
+  font-size: 12px;
+}
+
+
+/* Reduce border of well
+*/
+.well {
+  padding: 10px;
+  margin-bottom: 20px;
+}

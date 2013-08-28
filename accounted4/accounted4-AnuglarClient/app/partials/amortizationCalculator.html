@@ -59,24 +59,23 @@
         </div>
 
         <fieldset class="well" data-ng-hide="formModel.interestOnly">
-
+            <label class="span1 offset2 small muted" >years</label><label class="small muted">months</label>
             <div class="control-group">
-                <label class="control-label" for="amortizationPeriodYears">Amortization Years:</label>
+                <label class="control-label" for="amortizationPeriodYears">Amortization Period:</label>
                 <div class="controls">
                     <input class="span1" id="amortizationPeriodYears" type="number"
                            min="0" max="{{formModel.maxAmortizationYears}}"
+                           placeholder="years"
+                           required
                            data-ng-model="formModel.amortizationPeriodYears" />
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="control-label" for="amortizationPeriodMonths">Amortization Months:</label>
-                <div class="controls">
                     <input class="span1" id="amortizationPeriodMonths"
                            type="number" min="0" max="12"
+                           placeholder="months"
+                           required
                            data-ng-model="formModel.amortizationPeriodMonths" />
                 </div>
             </div>
+
 
             <div class="control-group">
                 <label class="control-label" for="compoundingPeriod">Compounding Period:</label>
@@ -116,7 +115,7 @@
                 <input class="span2" id="monthlyPayment" type="number" size="30"
                        placeholder="monthly payment"
                        data-ng-model="formModel.monthlyPayment" /> 
-                <button class="btn btn-primary"
+                <button class="btn btn-mini btn-primary"
                         ng-disabled="amForm.$invalid"
                         data-ng-click="formModel.calculateMonthlyPayment()">Calculate</button>
             </div>
@@ -124,10 +123,10 @@
 
         <div class="control-group">
             <div class="controls">
-                <button class="btn"
+                <button class="btn btn-mini"
                         ng-disabled="amForm.$invalid"
                         data-ng-click="formModel.generateAmSchedule()">Schedule</button>
-                <button class="btn"
+                <button class="btn btn-mini "
                         ng-disabled="amForm.$invalid"
                         data-ng-click="formModel.generateAmSchedulePdf()">pdf</button>
             </div>

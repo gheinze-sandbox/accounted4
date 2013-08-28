@@ -8,3 +8,14 @@
 .\core\user_account\user_account.sql
 .\core\user_account\user_role.sql
 .\core\user_account\user_delegate.sql
+
+.\core\party\party.sql
+.\core\party\person.sql
+.\core\party\organization.sql
+.\core\party\organization_contact.sql
+.\core\party\address.sql
+.\core\party\person_address_map.sql
+.\core\party\phone.sql
+.\core\party\person_phone_map.sql
+.\core\party\email.sql
+.\core\party\person_email_map.sql

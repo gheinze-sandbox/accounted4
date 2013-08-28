@@ -35,6 +35,6 @@ for /F "eol=;tokens=1" %%i in (create_list.txt) do (
 REM =============================================
 REM == Run generated script
 REM =============================================
-psql -p 5433 -e postgres postgres < %output%
+psql -p 5432 -e postgres postgres < %output%
 
 REM pause

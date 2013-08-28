@@ -47,6 +47,7 @@ function AmortizationCalculatorCtrl($scope, $filter, AmortizationService) {
          dateFormat: 'yy-M-dd'
         ,changeMonth: true
         ,changeYear: true
+//        ,buttonText: '<i class=icon-calendar></i>'
         ,buttonImage: 'img/office-calendar.png'
         ,buttonImageOnly: false
         ,showOn: "both" // "button" or "focus" or "both"
