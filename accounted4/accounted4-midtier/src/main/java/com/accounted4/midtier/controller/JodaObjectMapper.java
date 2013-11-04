@@ -8,11 +8,14 @@ import javax.annotation.PostConstruct;
 
 /**
  * Register the JodaModule with Jackson in order to support automatic
- * marshalling/un-marshalling of JodaTime objects.
+ * marshaling/un-marshaling of JodaTime objects.
  * 
  * @author glenn
  */
 public class JodaObjectMapper extends ObjectMapper {
+    
+    private static final long serialVersionUID = 1L;
+    
     
     @PostConstruct
     public void init() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Glenn Heinze <glenn@gheinze.com>.
+ * Copyright 2011 Glenn Heinze .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,20 +40,18 @@ import java.util.NoSuchElementException;
  *   partitions (equalized):        [8.34, 8.34, 8.33, 8.33, 8.33, 8.33]
  *   partitions (final adjustment): [8.34, 8.34, 8.34, 8.34, 8.34, 8.30]
  * 
- * @author Glenn Heinze <glenn@gheinze.com>
+ * @author Glenn Heinze 
  */
 public final class Split {
     
     private final Money inputMoney;
+    private final int bucketCount;
 
-    private final int denominator;
-    private final int partitions;
-
-    private BigDecimal floor;
-    private BigDecimal ceiling;
-    private BigDecimal remainder;
-    private BigDecimal smallestUnitSize;
-    private int remainderUnitCount;
+    private final BigDecimal floor;
+    private final BigDecimal ceiling;
+    private final BigDecimal remainder;
+    private final BigDecimal smallestUnitSize;
+    private final int remainderUnitCount;
 
 
     /**
@@ -61,31 +59,21 @@ public final class Split {
      * 
      * @param inputMoney The Money from which the split is to be based
      * 
-     * @param denominator The number of partitions this amount should
+     * @param bucketCount The number of partitions this amount should
      * be divided into.
      */
-    public Split(final Money inputMoney, final int denominator) {
+    public Split(final Money inputMoney, final int bucketCount) {
 
         if (null == inputMoney) {
             throw new IllegalArgumentException("Money amount may not be null");
         }
         
-        if (null == inputMoney) {
-            throw new ArithmeticException("Attempt to divide by 0");
+        if (bucketCount <= 0) {
+            throw new IllegalArgumentException("Number of buckets for the split must be > 0");
         }
         
         this.inputMoney = inputMoney;
-        this.denominator = denominator;
-        this.partitions = Math.abs(denominator);
-
-        init();
-
-    }
-
-
-    // Pre-compute split attributes
-    
-    private void init() {
+        this.bucketCount = bucketCount;
 
         int fractionDigits = inputMoney.getCurrency().getDefaultFractionDigits();
 
@@ -96,12 +84,12 @@ public final class Split {
                 Math.pow(10, fractionDigits * -1)
                 ));
 
-        final BigDecimal bigDenominator = new BigDecimal(denominator);
+        final BigDecimal bigDecimalBucketCount = new BigDecimal(bucketCount);
 
         // Do a straight forward divide, throw away the fractional units
         // This is the base amount for each container
         floor = inputMoney.getAmount().divide(
-                bigDenominator,
+                bigDecimalBucketCount,
                 fractionDigits,
                 RoundingMode.DOWN );
 
@@ -109,7 +97,7 @@ public final class Split {
         // be less then the actual amount.  Find out the difference.
         final BigDecimal recalculatedAmount =
                 floor
-                .multiply(bigDenominator)
+                .multiply(bigDecimalBucketCount)
                 .setScale(fractionDigits);
         remainder = inputMoney.getAmount().subtract(recalculatedAmount);
 
@@ -205,7 +193,7 @@ public final class Split {
             
             @Override
             public int size() {
-                return partitions;
+                return bucketCount;
             }
             
         };
@@ -236,7 +224,7 @@ public final class Split {
         
         @Override
         public boolean hasNext() {
-            return currentIndex < partitions;
+            return currentIndex < bucketCount;
         }
         
         @Override
@@ -275,7 +263,7 @@ public final class Split {
     private class EqualizedSplitAmount implements SplitAmountCalculator {
         @Override
         public BigDecimal nextAmount(final int index) {
-            return (index < remainderUnitCount) ? ceiling : floor;
+            return index < remainderUnitCount ? ceiling : floor;
         }
     }
 
@@ -288,8 +276,8 @@ public final class Split {
     private class FinalAdjustmentSplitAmount implements SplitAmountCalculator {
         @Override
         public BigDecimal nextAmount(final int index) {
-            if (index == (partitions-1)) {
-                BigDecimal multiplicand = new BigDecimal(partitions - 1);
+            if (index == bucketCount - 1) {
+                BigDecimal multiplicand = new BigDecimal(bucketCount - 1);
                 return inputMoney.getAmount().subtract(ceiling.multiply(multiplicand));
             }
             return ceiling;

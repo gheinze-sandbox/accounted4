@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Glenn Heinze <glenn@gheinze.com>.
+ * Copyright 2011 Glenn Heinze .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.Currency;
 /**
  * TODO: yet to be implemented: System defaults overridden by user defaults...
  * 
- * @author Glenn Heinze <glenn@gheinze.com>
+ * @author Glenn Heinze 
  */
 class AppConfig {
 

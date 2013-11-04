@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Glenn Heinze <glenn@gheinze.com>.
+ * Copyright 2011 Glenn Heinze .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,16 @@ package com.accounted4.money;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Currency;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * Exercise Money constructors and apis to verify contracts.
  * 
- * @author Glenn Heinze <glenn@gheinze.com>
+ * @author Glenn Heinze 
  */
 public class MoneyTest {
     
@@ -87,16 +90,18 @@ public class MoneyTest {
      */
     @Test
     public void testBigDecimalConstructorDefaultRounding() {
-        new Money(new BigDecimal("1.231"), Currency.getInstance("USD"));
+        Money m = new Money(new BigDecimal("1.231"), Currency.getInstance("USD"));
+        assertEquals("Default rounding mode", m.getRoundingMode(), AppConfig.getInstance().getDefaultRoundingMode());
     }
 
     
     /**
-     * Monetary amounts can be created using a system default rounding mode
+     * Monetary amounts can be created using a system default currency
      */
     @Test
     public void testBigDecimalConstructorDefaultCurrency() {
-        new Money(new BigDecimal("1.231"));
+        Money m = new Money(new BigDecimal("1.231"));
+        assertEquals("Default currency", m.getCurrency(), AppConfig.getInstance().getDefaultCurrency());
     }
     
     
@@ -157,18 +162,25 @@ public class MoneyTest {
         BigDecimal magnitude1 = new BigDecimal("1.11");
         BigDecimal magnitude2 = new BigDecimal("2.22");
         BigDecimal magnitude3 = new BigDecimal("3.33");
+        BigDecimal magnitude4 = new BigDecimal("-1.11");
         
         Currency usd = Currency.getInstance("USD");
         Currency cad = Currency.getInstance("CAD");
         
         Money moneyUsd = new Money(magnitude1, usd, RoundingMode.CEILING);
         Money moneyUsd2 = new Money(magnitude2, usd, RoundingMode.FLOOR);
-        Money moneyCad = new Money(magnitude3, cad);
 
         Money sum = moneyUsd.add(moneyUsd2);
         assertTrue("Addition result has same currency", sum.getCurrency().equals(moneyUsd.getCurrency()));
         assertTrue("Addition result has base rounding mode", sum.getRoundingMode().equals(moneyUsd.getRoundingMode()));
         assertTrue("Amounts add up", sum.getAmount().equals( magnitude1.add(magnitude2)));
+        
+        Money moneyCad = new Money(magnitude3, cad);
+        Money moneyCadNeg = new Money(magnitude4, cad);
+        Money moneyCadExp = new Money(magnitude2, cad);
+        
+        sum = moneyCad.add(moneyCadNeg);
+        assertTrue("Addition of negative amount", sum.equals(moneyCadExp));
         
         // Different currencies should throw an exception
         sum = moneyUsd.add(moneyCad);
@@ -185,25 +197,31 @@ public class MoneyTest {
     @Test
     public void testSubtract() {
         
-        BigDecimal magnitude1 = new BigDecimal("1.11");
-        BigDecimal magnitude2 = new BigDecimal("2.22");
-        BigDecimal magnitude3 = new BigDecimal("3.33");
+        BigDecimal magnitude111 = new BigDecimal("1.11");
+        BigDecimal magnitude222 = new BigDecimal("2.22");
+        BigDecimal magnitude333 = new BigDecimal("3.33");
         
         Currency usd = Currency.getInstance("USD");
         Currency cad = Currency.getInstance("CAD");
         
-        Money moneyUsd = new Money(magnitude1, usd, RoundingMode.CEILING);
-        Money moneyUsd2 = new Money(magnitude2, usd, RoundingMode.FLOOR);
-        Money moneyCad = new Money(magnitude3, cad);
+        Money moneyUsd111 = new Money(magnitude111, usd, RoundingMode.CEILING);
+        Money moneyUsd222 = new Money(magnitude222, usd, RoundingMode.FLOOR);
+        Money moneyCad333 = new Money(magnitude333, cad);
 
-        Money sum = moneyUsd.subtract(moneyUsd2);
-        assertTrue("Subtraction result has same currency", sum.getCurrency().equals(moneyUsd.getCurrency()));
-        assertTrue("Subtraction result has base rounding mode", sum.getRoundingMode().equals(moneyUsd.getRoundingMode()));
-        assertTrue("Subtraction difference is as expected", sum.getAmount().equals( magnitude1.subtract(magnitude2)));
+        Money sum = moneyUsd111.subtract(moneyUsd222);
+        assertTrue("Subtraction result has same currency", sum.getCurrency().equals(moneyUsd111.getCurrency()));
+        assertTrue("Subtraction result has base rounding mode", sum.getRoundingMode().equals(moneyUsd111.getRoundingMode()));
+        assertTrue("Subtraction difference is as expected", sum.getAmount().equals( magnitude111.subtract(magnitude222)));
+
+        BigDecimal magnitudeN111 = new BigDecimal("-1.11");
+        Money moneyCadN111 = new Money(magnitudeN111, cad);
+        sum = moneyCad333.subtract(moneyCadN111);
+        Money expected = new Money("4.44", cad);
+        assertTrue("Subtracting a negative amount", sum.equals(expected));
         
         // Different currencies should throw an exception
         try {
-            sum = moneyUsd.subtract(moneyCad);
+            sum = moneyUsd111.subtract(moneyCad333);
             fail("Subtraction: different currencies should throw an exception");
         } catch(CurrencyMismatchRuntimeException cmm) {
         }
@@ -216,10 +234,11 @@ public class MoneyTest {
      */
     @Test
     public void testMultiply() {
-        
-        Money money = new Money(new BigDecimal("2.22"));
+
+        // Use non-defaults
+        Money money = new Money(new BigDecimal("2.22"), Currency.getInstance("USD"), RoundingMode.CEILING);
         Money product = money.multiply(-2.5d);
-        Money expected = new Money(new BigDecimal("-5.55"));
+        Money expected = new Money(new BigDecimal("-5.55"), Currency.getInstance("USD"), RoundingMode.CEILING);
         
         assertTrue("Multiplication", product.equals(expected));
         
@@ -249,7 +268,7 @@ public class MoneyTest {
     
     
     /**
-     * A split into 0 partitions show throw an exception
+     * A split into 0 partitions should throw an exception
      */
     @Test(expected=ArithmeticException.class)
     public void testSplitOnZero() {
@@ -258,6 +277,27 @@ public class MoneyTest {
         fail("Can't split by 0");
     }
 
+    /**
+     * A split into negative partitions should throw an exception
+     */
+    @Test(expected=ArithmeticException.class)
+    public void testSplitOnNegative() {
+        Money money = new Money(new BigDecimal("50.00"));
+        money.split(-6);
+        fail("Can't split by negative number");
+    }
+
+    /**
+     * Splitting into n should result in n containers.
+    */
+    @Test
+    public void testSplit() {
+        Money money = new Money(new BigDecimal("50.00"));
+        Split split = money.split(6);
+        assertEquals("Split into expected number of containers", 6, split.getPartitions(DivideType.Equalized).size());
+    }
+    
+    
     /**
      * Can only compare similar currencies, then based on amount
      */
@@ -287,11 +327,39 @@ public class MoneyTest {
         assertTrue("Equal", 0 == moneyCad.compareTo(moneyCad2));
 
         assertTrue("Less than 2", moneyUsd.lessThan(moneyUsd2));
+        assertFalse("Less than 2b", moneyUsd2.lessThan(moneyUsd));
+
         assertTrue("Greater than 2", moneyUsd2.greaterThan(moneyUsd));
+        assertFalse("Greater than 2b", moneyUsd.greaterThan(moneyUsd2));
+
         assertTrue("Equal 2", moneyCad.equals(moneyCad2));
 
+        assertFalse("Equality class mis-match", moneyCad.equals(BigDecimal.ONE));
+    }
+
+    @Test
+    public void testEquality() {
+        
+        Money money1 = new Money("1.23", Currency.getInstance("USD"), RoundingMode.FLOOR);
+        assertFalse("Null mismatch", money1.equals(null));
+        
+        //Money money2 = new Money("1.23", Currency.getInstance("USD"), RoundingMode.CEILING);
+        //assertFalse("Rounding mode mismatch", money1.equals(money2));
+        
+        Money money2 = new Money("1.23", Currency.getInstance("CAD"), RoundingMode.FLOOR);
+        assertFalse("Currency mismatch", money1.equals(money2));
+        
+        money2 = new Money("1.24", Currency.getInstance("USD"), RoundingMode.FLOOR);
+        assertFalse("Magnitude mismatch", money1.equals(money2));
         
     }
 
-
+    @Test
+    public void testToString() {
+        
+        Money money1 = new Money("1.23", Currency.getInstance("USD"), RoundingMode.FLOOR);
+        assertEquals("Equals without currency", "1.23", money1.toString());
+        assertEquals("Equals with currency", "USD 1.23", money1.toStringWithCurrency());
+        assertEquals("Equals with debug", "USD 1.23[FLOOR]", money1.toDebugString());
+    }
 }

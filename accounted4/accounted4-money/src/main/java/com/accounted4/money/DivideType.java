@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Glenn Heinze <glenn@gheinze.com>.
+ * Copyright 2011 Glenn Heinze .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ package com.accounted4.money;
  *      ====    ====    ====
  *     49.98   50.00   50.00
  *
- * @author Glenn Heinze <glenn@gheinze.com>
+ * @author Glenn Heinze 
  */
 public enum DivideType {
 

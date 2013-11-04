@@ -32,7 +32,7 @@
             <div class="control-group">
                 <label class="control-label" for="organizationName">Organization:</label>
                 <div class="controls">
-                    <input class="input-mini" id="organizationName" type="text"
+                    <input class="input-large" id="organizationName" type="text"
                            ng-change="formModel.nameChanged()"
                            data-ng-model="formModel.organizationName"
                            required />
@@ -45,7 +45,7 @@
             <div class="control-group">
                 <label class="control-label" for="partyName">Last Name:</label>
                 <div class="controls">
-                    <input class="input-mini" id="lastName" type="text"
+                    <input class="input-medium" id="lastName" type="text"
                            ng-change="formModel.nameChanged()"
                            data-ng-model="formModel.lastName"
                            required />
@@ -55,7 +55,7 @@
             <div class="control-group">
                 <label class="control-label" for="partyName">First Name:</label>
                 <div class="controls">
-                    <input class="input-mini" id="firstName" type="text"
+                    <input class="input-medium" id="firstName" type="text"
                            ng-change="formModel.nameChanged()"
                            data-ng-model="formModel.firstName"
                            required />
@@ -67,15 +67,55 @@
         <div class="control-group">
             <label class="control-label" for="displayName">Display Name:</label>
             <div class="controls">
-                <input class="input-mini" id="displayName" type="text"
+                <input class="input-large" id="displayName" type="text"
                        data-ng-model="formModel.displayName"
                        required />
             </div>
         </div>
 
+        <div class="control-group">
+            <label class="control-label" for="notes">Notes:</label>
+            <div class="controls">
+                <textarea class="input-xlargelarge" id="notes" type="text" rows="4"
+                       data-ng-model="formModel.notes" />
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="controls">
+                <button class="btn btn-mini"
+                        ng-disabled="amForm.$invalid"
+                        data-ng-click="formModel.generateAmSchedule()">Save</button>
+            </div>
+        </div>
+        
     </form>
 
-
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+    
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#addressTab" data-toggle="tab">Address</a></li>
+    <li><a href="#phoneTab" data-toggle="tab">Phone</a></li>
+    <li><a href="#emailTab" data-toggle="tab">Email</a></li>
+  </ul>
+    
+  <div class="tab-content">
+      
+    <div class="tab-pane active" id="addressTab">
+      <p>Address List</p>
+    </div>
+      
+    <div class="tab-pane" id="phoneTab">
+      <p>Phone List</p>
+    </div>
+      
+    <div class="tab-pane" id="emailTab">
+      <p>Email List</p>
+    </div>
+      
+  </div>
+    
+</div>
     
 
     

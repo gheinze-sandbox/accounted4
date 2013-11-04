@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Glenn Heinze <glenn@gheinze.com>.
+ * Copyright 2011 Glenn Heinze .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,11 @@ import java.util.Currency;
 /**
  * Thrown if an operation is attempted on Moneys with differing currencies.
  * 
- * @author Glenn Heinze <glenn@gheinze.com>
+ * @author Glenn Heinze 
  */
 public class CurrencyMismatchRuntimeException extends RuntimeException {
+    
+    private static final long serialVersionUID = 1L;
     
     public CurrencyMismatchRuntimeException(Currency base, Currency operand) {
         super(String.format("Currency mismatch: [%s, %s]", base.toString(), operand.toString()));

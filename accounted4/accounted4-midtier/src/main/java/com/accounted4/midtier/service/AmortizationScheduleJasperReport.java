@@ -23,9 +23,10 @@ public class AmortizationScheduleJasperReport {
     
     @PostConstruct
     public void init() throws IOException, JRException {
-        ClassPathResource resource = new ClassPathResource("reports/AmortizationSchedule.jasper");
-        InputStream resourceInputStream = resource.getInputStream();
-        report = (JasperReport) JRLoader.loadObject(resourceInputStream);
+        ClassPathResource resource = new ClassPathResource("com/accounted4/midtier/reports/AmortizationSchedule.jasper");
+        try (InputStream resourceInputStream = resource.getInputStream()) {
+            report = (JasperReport) JRLoader.loadObject(resourceInputStream);
+        }
     }
     
     public JasperReport getCompiledReport() {

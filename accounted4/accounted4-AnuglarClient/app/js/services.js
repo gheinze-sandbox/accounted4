@@ -44,7 +44,10 @@ angular.module('a4App.services').factory('AmortizationService', function($http, 
                     
                     function(data, status, headers, config) {
                         for (var i = 0; i < data.length; i++) {
-                            data[i].date = new Date(data[i].paymentDate[0], data[i].paymentDate[1] - 1, data[i].paymentDate[2]);
+                            // The payment date is a String in "2013-12-31" format
+                            // Generate an actual Javascript date object based on the parts
+                            var dateParts = data[i].paymentDate.split('-');
+                            data[i].date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
                         }
                         onSuccess(data);
                     }

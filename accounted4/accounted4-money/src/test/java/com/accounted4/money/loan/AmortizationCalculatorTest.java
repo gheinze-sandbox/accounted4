@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Glenn Heinze <glenn@gheinze.com>.
+ * Copyright 2012 Glenn Heinze .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.Iterator;
 import org.joda.time.LocalDate;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
- * @author Glenn Heinze <glenn@gheinze.com>
+ * @author Glenn Heinze 
  */
 public class AmortizationCalculatorTest {
     
@@ -175,7 +175,7 @@ public class AmortizationCalculatorTest {
             resultCount++;
             ScheduledPayment payment = result.next();
             interestTotal = interestTotal.add(payment.getInterest());
-            System.out.println("" + payment);
+            //System.out.println("" + payment);
         }
         assertEquals("Amortized payment count", termInMonths, resultCount);
         assertEquals("Amortized Interest total", new Money("45681.32"), interestTotal);

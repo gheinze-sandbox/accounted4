@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Glenn Heinze <glenn@gheinze.com>.
+ * Copyright 2011 Glenn Heinze .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,9 +60,9 @@ import java.util.Currency;
  * two different currencies (say an an addition of a USD money amount and
  * a CAD money amount) will result in a CurrencyMismatchRuntimeException.
  * 
- * @author Glenn Heinze <glenn@gheinze.com>
+ * @author Glenn Heinze 
  */
-public final class Money implements Serializable, Comparable {
+public final class Money implements Serializable, Comparable<Money> {
 
     
     private static final long serialVersionUID = 1L;
@@ -90,7 +90,7 @@ public final class Money implements Serializable, Comparable {
      * How fractional amounts should be dealt with, typically applicable in
      * division operations.
      */
-    private RoundingMode roundingMode;
+    private final RoundingMode roundingMode;
 
 
 
@@ -336,10 +336,9 @@ public final class Money implements Serializable, Comparable {
      */
 
     @Override
-    public int compareTo(final Object arg) {
-        Money moneyArg = (Money) arg;
-        assertSameCurrencyAs(moneyArg);
-        return amount.compareTo(moneyArg.getAmount());
+    public int compareTo(final Money arg) {
+        assertSameCurrencyAs(arg);
+        return amount.compareTo(arg.getAmount());
     }
 
     
@@ -349,11 +348,11 @@ public final class Money implements Serializable, Comparable {
      */
 
     public boolean greaterThan(final Money arg) {
-        return (this.compareTo(arg) == 1);
+        return compareTo(arg) > 0;
     }
 
     public boolean lessThan(final Money arg) {
-        return (this.compareTo(arg) == -1);
+        return compareTo(arg) < 0;
     }
 
 
@@ -368,6 +367,13 @@ public final class Money implements Serializable, Comparable {
         return amount.hashCode() + currency.hashCode();
     }
 
+    /**
+     * Note that rounding mode does not affect equality whereas currency
+     * and magnitude do.
+     * 
+     * @param obj
+     * @return 
+     */
     @Override
     public boolean equals(final Object obj) {
         if (obj == null) {
@@ -377,13 +383,13 @@ public final class Money implements Serializable, Comparable {
             return false;
         }
         final Money other = (Money) obj;
-        if (this.amount != other.amount && ( this.amount == null || 0 != this.amount.compareTo(other.amount) )) {
+        
+        if (!amount.equals(other.amount)) {
             return false;
         }
-        if (this.currency != other.currency && ( this.currency == null || !this.currency.equals(other.currency) )) {
-            return false;
-        }
-        return true;
+        
+        return currency.equals(other.currency);
+
     }
 
 

@@ -18,7 +18,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Controller;
@@ -33,7 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Sample controller for handling "rest" requests with auto marshalling/unmarshalling of requests and responses (json
  * and xml).
  *
- * @author Glenn Heinze <glenn@gheinze.com>
+ * @author Glenn Heinze 
  */
 @Controller
 public class HomeController {
@@ -55,15 +54,12 @@ public class HomeController {
 
         protected List<T> list;
 
-
         public JaxbList() {
         }
-
 
         public JaxbList(List<T> list) {
             this.list = list;
         }
-
 
         @XmlElement(name = "Item")
         public List<T> getList() {
@@ -73,6 +69,38 @@ public class HomeController {
     }
 
 
+    private List<User> getUsers() {
+
+        String query = "SELECT name, display_name FROM user_account";
+
+        return jdbcTemplate.query(query, new SqlParameterSource() {
+            
+            @Override
+            public boolean hasValue(String string) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public Object getValue(String string) throws IllegalArgumentException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public int getSqlType(String string) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public String getTypeName(String string) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+        }, new UserMapper());
+
+    }
+    
+    
+    
     /**
      * Hack sample demonstrating querying a db to get a list, then automarshal the
      * list as a json response. Push db work into a service ...
@@ -82,39 +110,7 @@ public class HomeController {
     @RequestMapping(value = "/users/{id}.json", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public List<User> getUserJson(@PathVariable Long id) {
-        //return new User(id, "John Doe", "display name");
-        String query = "SELECT name, display_name FROM user_account";
-        SqlParameterSource namedParameters = new MapSqlParameterSource();
-
-        List<User> users = jdbcTemplate.query(query, new SqlParameterSource() {
-            @Override
-            public boolean hasValue(String string) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-
-            @Override
-            public Object getValue(String string) throws IllegalArgumentException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-
-            @Override
-            public int getSqlType(String string) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-
-            @Override
-            public String getTypeName(String string) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-
-        }, new UserMapper());
-
-        return users;
-
+        return getUsers();
     }
 
 
@@ -127,41 +123,7 @@ public class HomeController {
     @RequestMapping(value = "/users/{id}.xml", method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
     public JaxbList<HomeController.User> getUserXml(@PathVariable Long id) {
-
-        String query = "SELECT name, display_name FROM user_account";
-        SqlParameterSource namedParameters = new MapSqlParameterSource();
-
-        List<User> users = jdbcTemplate.query(query, new SqlParameterSource() {
-            @Override
-            public boolean hasValue(String string) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-
-            @Override
-            public Object getValue(String string) throws IllegalArgumentException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-
-            @Override
-            public int getSqlType(String string) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-
-            @Override
-            public String getTypeName(String string) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-
-        }, new UserMapper());
-
-        return new JaxbList<>(users);
-
-        // return new User(id, "John Doe", "displayName");
-
+        return new JaxbList<>(getUsers());
     }
 
 
@@ -176,7 +138,6 @@ public class HomeController {
 
             return user;
         }
-
 
     }
 
@@ -232,24 +193,6 @@ public class HomeController {
 
     }
 
-
-    public static class Term {
-
-        public String value;
-        public String value2;
-
-
-        public void setValue(String val) {
-            this.value = val;
-        }
-
-
-        public void setValue2(String val) {
-            this.value2 = val;
-        }
-
-
-    }
 
 // ==============================================
 

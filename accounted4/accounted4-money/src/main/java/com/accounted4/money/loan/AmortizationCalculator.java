@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Glenn Heinze <glenn@gheinze.com>.
+ * Copyright 2012 Glenn Heinze .
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.joda.time.LocalDate;
 /**
  * Utility functions for amortization schedule generation
  * 
- * @author Glenn Heinze <glenn@gheinze.com>
+ * @author Glenn Heinze 
  */
 public class AmortizationCalculator {
     
@@ -43,12 +43,12 @@ public class AmortizationCalculator {
      *
      * @param terms
      * 
-     * @result An ordered list of payments which comprise the set of regular
+     * @return An ordered list of payments which comprise the set of regular
      * payments fulfilling the terms of the given amortization parameters.
      */
     public static Iterator<ScheduledPayment> getPayments(AmortizationAttributes terms) {
         
-        return (terms.isInterestOnly()) ?
+        return terms.isInterestOnly() ?
                 new InterestOnlyIterator(terms) :
                 new AmortizedIterator(terms);
         
@@ -136,10 +136,9 @@ public class AmortizationCalculator {
          */
         @Override
         public boolean hasNext() {
-            return ( 
-                    paymentNumber < terms.getTermInMonths() &&
+            return  paymentNumber < terms.getTermInMonths() &&
                     Math.round(balance * truncationFactor ) > 0L
-                    );
+                    ;
         }
 
         
@@ -228,16 +227,16 @@ public class AmortizationCalculator {
         private final double j;   // period rate: ie rate until compounding trigger (rate for 6 months for semi-annual, rate for 1 month for monthly)
         private final double overpayment;
         private double thePayment;
-        private Money thePaymentMoney;
+        private final Money thePaymentMoney;
         
         public AmortizedIterator(AmortizationAttributes terms) {
             super(terms);
             
-            assert(terms.getLoanAmount().greaterThan(zeroMoney));
-            assert(terms.getTermInMonths() > 0);
-            assert(terms.getAmortizationPeriodMonths() > 0);
-            assert(terms.getCompoundingPeriodsPerYear() > 0);
-            assert(terms.getInterestRate() > 0.0d);            
+            assert terms.getLoanAmount().greaterThan(zeroMoney);
+            assert terms.getTermInMonths() > 0;
+            assert terms.getAmortizationPeriodMonths() > 0;
+            assert terms.getCompoundingPeriodsPerYear() > 0;
+            assert terms.getInterestRate() > 0.0d;
             
             j = getPeriodRate(terms.getInterestRate(), terms.getCompoundingPeriodsPerYear());
 
@@ -310,6 +309,8 @@ public class AmortizationCalculator {
      *
      * @param amount the principal amount
      * @param rate the annual interest rate expressed as a percent
+     * @return Raw amount with fractional units representing
+     * the monthly interest charge.
      */
     public static double getInterestOnlyMonthlyPayment(double amount, double rate) {
         // percent to decimal, annual rate to period (monthly) rate
@@ -322,7 +323,7 @@ public class AmortizationCalculator {
      * Given an amount and an annual interest rate, return the monthly payment
      * for an interest only loan.
      *
-     * @param a the principal
+     * @param loanAmount the principal
      * @param i the interest rate expressed as a percent
      * @param compoundPeriodsPerYear  The number of times a year interest is calculated
      *     Canadian law specifies semi-annually (ie 2x a year).  Americans
@@ -364,7 +365,7 @@ public class AmortizationCalculator {
      * @return interest rate as a decimal (ie .125 for 12.5%)
      */
     public static double getPeriodRate(double annualInterestRatePercent, int compoundPeriodsPerYear) {
-        return Math.pow( (1 + annualInterestRatePercent/(compoundPeriodsPerYear*100.0)), (compoundPeriodsPerYear/12.0) ) - 1;
+        return Math.pow( 1 + annualInterestRatePercent / (compoundPeriodsPerYear * 100.0), compoundPeriodsPerYear / 12.0 ) - 1;
     }
     
     
