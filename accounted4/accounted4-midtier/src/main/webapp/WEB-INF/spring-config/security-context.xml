@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2013 glenn.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+  xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!-- First step: add springSecurityFilterChain as the first
+         Filter in the web.xml file so everything is intercepted first.
+    
+         The prefix "ROLE_" is a marker which indicates that a simple comparison
+         with the user’s authorities should be made.
+    -->
+    
+    <beans:bean name="bcryptEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+     
+    <authentication-manager>
+        <authentication-provider>
+            <password-encoder ref="bcryptEncoder"/>
+            <jdbc-user-service data-source-ref="securityDataSource"/>
+        </authentication-provider>       
+    </authentication-manager>
+
+        
+    <http pattern="/css/**" security="none"/>
+
+    <http auto-config="true">
+        <intercept-url pattern="/index.html" access="ROLE_USER" requires-channel="https"/>
+        <intercept-url pattern="/login.html" access="IS_AUTHENTICATED_ANONYMOUSLY" requires-channel="https" />
+        <intercept-url pattern="/**" access="ROLE_USER" requires-channel="https" />
+        <form-login login-page="/login.html"
+                    default-target-url="/index.html"
+                    always-use-default-target="true" />
+        <logout logout-url="/logout" logout-success-url="/login.html" />
+        <!-- <csrf /> -->
+        <port-mappings>
+            <port-mapping http="8084" https="8443"/>
+        </port-mappings>
+    </http>
+
+</beans:beans>

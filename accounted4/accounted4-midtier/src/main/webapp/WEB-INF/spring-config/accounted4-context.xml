@@ -19,7 +19,7 @@
     <!-- Bean creation via annotations -->
     
     <!--
-        For normally Jackson use, the converter does not need to be specified:
+        For normal Jackson use, the converter does not need to be specified:
         presence on the classpath is sufficient.
         However, we wish to inform Jackson about custom JodaTime object mappings.
         This is done by adding an objectMapper property to the Jackson converter.
@@ -42,6 +42,7 @@
     
     <!-- Use JNDI to find the database connection -->
     <jee:jndi-lookup id="dataSource" jndi-name="/jdbc/accounted4" resource-ref="true" />
+    <jee:jndi-lookup id="securityDataSource" jndi-name="/jdbc/accounted4Security" resource-ref="true" />
     
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
         <constructor-arg ref="dataSource" />

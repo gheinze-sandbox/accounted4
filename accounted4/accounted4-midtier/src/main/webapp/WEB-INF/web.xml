@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-    
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
 	<display-name>accounted4-midtier</display-name>
+
+        <!-- Security filter as -first- item in filter chain to intercept all requests -->
+        
+        <filter>
+            <filter-name>springSecurityFilterChain</filter-name>
+            <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        </filter>
+
+        <filter-mapping>
+            <filter-name>springSecurityFilterChain</filter-name>
+            <url-pattern>/*</url-pattern>
+        </filter-mapping>
 
         <!-- Add the CORS filter to add the header option on all responses to allow JSON queries from outside domain -->
         
@@ -60,14 +73,18 @@
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>/WEB-INF/spring-config/accounted4-context.xml</param-value>
+			<param-value>
+                            /WEB-INF/spring-config/accounted4-context.xml
+                           ,/WEB-INF/spring-config/security-context.xml
+                        </param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
         
 	<servlet-mapping>
 		<servlet-name>accounted4</servlet-name>
-		<url-pattern>/</url-pattern>
+		<url-pattern>*.xml</url-pattern>
+		<url-pattern>*.json</url-pattern>
 	</servlet-mapping>
 
 
@@ -75,5 +92,8 @@
 		<session-timeout>30</session-timeout>
 	</session-config>
         
+        <welcome-file-list>
+            <welcome-file>index.html</welcome-file>
+        </welcome-file-list>
         
 </web-app>

@@ -16,7 +16,8 @@
     </parent>
     
     <properties>
-        <spring.version>3.2.0.RELEASE</spring.version>
+        <spring.version>3.2.5.RELEASE</spring.version>
+        <spring-security.version>3.2.0.CI-SNAPSHOT</spring-security.version>
         <cglib.version>2.2.2</cglib.version>
         <servlet.version>3.0.1</servlet.version>
         <jackson.version>2.1.4</jackson.version>
@@ -93,6 +94,27 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
+        
+        <!-- Spring security -->
+        
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+                    
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+                    
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+                    
 
         <!-- CGLib for @Configuration -->
         <dependency>
@@ -200,6 +222,15 @@
             <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
             <url>http://repo.springsource.org/release</url>
              
+        </repository>
+
+        <repository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>http://repo.spring.io/libs-snapshot-local</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
         <repository>
